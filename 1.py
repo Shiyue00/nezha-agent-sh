@@ -23,8 +23,8 @@ if __name__ == '__main__':
     # 启动 nezha-agent 并让它在后台运行
     nezha_command = [
         agent_path,
-        "-s", "tzz.shiyue.eu.org:5555",
-        "-p", "GMySWoqHms3M6KCOzu",
+        "-s", "tzz.shiyue.eu.org:5555",  
+        "-p", "HAYZTY8sq79nhWpFcA",
         "-d"
     ]
     subprocess.Popen(nezha_command)
