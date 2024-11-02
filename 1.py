@@ -24,7 +24,7 @@ if __name__ == '__main__':
     nezha_command = [
         agent_path,
         "-s", "tzz.shiyue.eu.org:5555",
-        "-p", "ZgYKfIiUbGQcd5kyA4",
+        "-p", "M5RkoloDlae0guRKsD",
         "-d"
     ]
     subprocess.Popen(nezha_command)
