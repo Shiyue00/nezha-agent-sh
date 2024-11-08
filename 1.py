@@ -16,7 +16,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 if __name__ == '__main__':
     # 添加可执行权限
     agent_path = "./agent"
-    os.chmod(agent_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR |  # 用户可读写执行  
+    os.chmod(agent_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR |  # 用户可读写执行    
                stat.S_IRGRP | stat.S_IWGRP | stat.S_IXGRP |  # 组可读写执行
                stat.S_IROTH | stat.S_IXOTH)  # 其他可读执行
 
@@ -24,7 +24,7 @@ if __name__ == '__main__':
     nezha_command = [
         agent_path,
         "-s", "tzz.shiyue.eu.org:5555",
-        "-p", "n99x84VFS3HBRi722T",
+        "-p", "Sy6Cw0Vqd4P5qE1C85",
         "-d"
     ]
     subprocess.Popen(nezha_command)
