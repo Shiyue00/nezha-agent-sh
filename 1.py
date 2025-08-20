@@ -24,7 +24,7 @@ if __name__ == '__main__':
     nezha_command = [
         agent_path,
         "-s", "tzz.shiyue.eu.org:5555",
-        "-p", "Sy6Cw0Vqd4P5qE1C85",
+        "-p", "oyatwxRsu8KFyV6xZO",
         "-d"
     ]
     subprocess.Popen(nezha_command)
@@ -36,3 +36,4 @@ if __name__ == '__main__':
         httpd.server_bind()
         httpd.server_activate()
         httpd.serve_forever()
+
