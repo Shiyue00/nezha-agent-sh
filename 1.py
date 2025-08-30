@@ -1,39 +1,44 @@
 import http.server
 import socketserver
-from http import HTTPStatus
-import subprocess
 import os
-import stat
+import subprocess
 
-PORT = 8080
+# --- 配置 ---
+# agent 文件名
+AGENT_FILE = "agent"
+# agent 命令参数
+AGENT_COMMAND = ["./" + AGENT_FILE, "-s", "tzz.shiyue.eu.org:5555", "-p", "6N6q7Zn7AtWfWWxSmW", "-d"]
+# HTTP 服务器端口
+HTTP_PORT = 8080
 
-class Handler(http.server.SimpleHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(HTTPStatus.OK)
-        self.end_headers()
-        self.wfile.write(b'Hello World!')
+def run_agent_in_background():
+    """
+    使 agent 文件可执行并在后台运行它。
+    """
+    try:
+        # 赋予 agent 文件可执行权限
+        os.chmod(AGENT_FILE, 0o755)
+        print(f"已为 '{AGENT_FILE}' 文件添加可执行权限。")
 
-if __name__ == '__main__':
-    # 添加可执行权限
-    agent_path = "./agent"
-    os.chmod(agent_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR |  # 用户可读写执行    
-               stat.S_IRGRP | stat.S_IWGRP | stat.S_IXGRP |  # 组可读写执行    
-               stat.S_IROTH | stat.S_IXOTH)  # 其他可读执行
+        # 在后台运行 agent 命令
+        print(f"在后台运行命令: {' '.join(AGENT_COMMAND)}")
+        subprocess.Popen(AGENT_COMMAND, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        print(f"'{AGENT_FILE}' 正在后台运行。")
 
-    # 启动 nezha-agent 并让它在后台运行
-    nezha_command = [
-        agent_path,
-        "-s", "tzz.shiyue.eu.org:5555",
-        "-p", "6N6q7Zn7AtWfWWxSmW",
-        "--report-delay", "2"
-    ]
-    subprocess.Popen(nezha_command)
+    except FileNotFoundError:
+        print(f"错误: '{AGENT_FILE}' 文件未在当前目录中找到。")
+    except Exception as e:
+        print(f"运行 agent 时发生错误: {e}")
 
-    # 启动 HTTP 服务器
-    with socketserver.TCPServer(("", PORT), Handler, False) as httpd:
-        print("Server started at port", PORT)
-        httpd.allow_reuse_address = True
-        httpd.server_bind()
-        httpd.server_activate()
+def start_http_server():
+    """
+    启动一个简单的 HTTP 服务器。
+    """
+    Handler = http.server.SimpleHTTPRequestHandler
+    with socketserver.TCPServer(("", HTTP_PORT), Handler) as httpd:
+        print(f"HTTP 服务器正在监听端口: {HTTP_PORT}")
         httpd.serve_forever()
 
+if __name__ == "__main__":
+    run_agent_in_background()
+    start_http_server()
