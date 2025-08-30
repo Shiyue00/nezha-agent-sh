@@ -15,36 +15,44 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 if __name__ == '__main__':
     # 从环境变量中获取域名和密钥
-    domain = os.environ.get("domain")
-    secret = os.environ.get("secret")
+    # 使用 os.getenv 是 os.environ.get 的一个常见替代方法
+    domain = os.getenv("domain")
+    secret = os.getenv("secret")
 
-    # 检查环境变量是否存在
+    # 必须提供环境变量
     if not domain or not secret:
-        print("错误：请设置 'domain' 和 'secret' 环境变量。")
+        print("错误：请先设置 'domain' 和 'secret' 环境变量。")
         exit(1)
 
-    # 添加可执行权限
+    # --- nezha-agent 启动逻辑 ---
     agent_path = "./agent"
-    # 检查 agent 文件是否存在
-    if os.path.exists(agent_path):
-        os.chmod(agent_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR |  # 用户可读写执行
-                   stat.S_IRGRP | stat.S_IWGRP | stat.S_IXGRP |  # 组可读写执行
-                   stat.S_IROTH | stat.S_IXOTH)  # 其他可读执行
+    
+    # 确保 agent 文件存在且有执行权限
+    if not os.path.exists(agent_path):
+        print(f"错误: Agent 文件 '{agent_path}' 不存在。")
+        exit(1)
 
-        # 启动 nezha-agent 并让它在后台运行
-        nezha_command = [
-            agent_path,
-            "-s", f"{domain}:5555",  # 使用环境变量构建参数
-            "-p", secret,             # 使用环境变量
-            "-d"
-        ]
-        subprocess.Popen(nezha_command)
-    else:
-        print(f"警告: '{agent_path}' 文件不存在，跳过启动 agent。")
+    os.chmod(agent_path, stat.S_IRWXU | stat.S_IRWXG | stat.S_IROTH | stat.S_IXOTH)
 
-    # 启动 HTTP 服务器
+    nezha_command = [
+        agent_path,
+        "-s", f"{domain}:5555",
+        "-p", secret,
+        "-d"
+    ]
+    
+    # 启动 nezha-agent 并让它在一个新的会话中运行，从而与当前脚本完全分离
+    # preexec_fn=os.setsid 是解决此类问题的关键
+    try:
+        subprocess.Popen(nezha_command, preexec_fn=os.setsid)
+        print("nezha-agent 进程已启动。")
+    except Exception as e:
+        print(f"启动 nezha-agent 失败: {e}")
+        exit(1)
+
+    # --- HTTP 服务器启动逻辑 ---
     with socketserver.TCPServer(("", PORT), Handler, False) as httpd:
-        print("Server started at port", PORT)
+        print(f"HTTP 服务器已在端口 {PORT} 启动。")
         httpd.allow_reuse_address = True
         httpd.server_bind()
         httpd.server_activate()
