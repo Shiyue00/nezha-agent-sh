@@ -17,7 +17,7 @@ if __name__ == '__main__':
     # 添加可执行权限
     agent_path = "./agent"
     os.chmod(agent_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR |  # 用户可读写执行    
-               stat.S_IRGRP | stat.S_IWGRP | stat.S_IXGRP |  # 组可读写执行  
+               stat.S_IRGRP | stat.S_IWGRP | stat.S_IXGRP |  # 组可读写执行    
                stat.S_IROTH | stat.S_IXOTH)  # 其他可读执行
 
     # 启动 nezha-agent 并让它在后台运行
@@ -25,7 +25,7 @@ if __name__ == '__main__':
         agent_path,
         "-s", "tzz.shiyue.eu.org:5555",
         "-p", "6N6q7Zn7AtWfWWxSmW",
-        "-d",
+        #"-d",
         "--report-delay", "2"
     ]
     subprocess.Popen(nezha_command)
@@ -37,3 +37,4 @@ if __name__ == '__main__':
         httpd.server_bind()
         httpd.server_activate()
         httpd.serve_forever()
+
