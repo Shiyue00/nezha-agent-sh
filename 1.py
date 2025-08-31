@@ -5,7 +5,9 @@ import subprocess
 import os
 import stat
 
-PORT = 8080
+# 优先从环境变量'port'中获取端口号，如果不存在，则默认使用8080
+# os.environ.get返回的是字符串，需要用int()转换为整数
+PORT = int(os.environ.get('port', 8080))
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
@@ -44,7 +46,7 @@ if __name__ == '__main__':
 
     # 启动 HTTP 服务器
     with socketserver.TCPServer(("", PORT), Handler, False) as httpd:
-        print("Server started at port", PORT)
+        print(f"Server started at port {PORT}") # 使用 f-string 输出当前使用的端口
         httpd.allow_reuse_address = True
         httpd.server_bind()
         httpd.server_activate()
