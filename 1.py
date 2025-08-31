@@ -59,8 +59,8 @@ if __name__ == '__main__':
         nezha_command = [
             agent_path,
             "-s", f"{domain}:5555",
-            "-p", secret,
-            "-d"
+            "-p", secret
+            # "-d"
         ]
         subprocess.Popen(nezha_command)
     else:
@@ -77,3 +77,4 @@ if __name__ == '__main__':
     else:
         print(f"错误：在尝试了 {MAX_PORT_TRIES} 次后，未能找到可用的端口。")
         exit(1)
+
